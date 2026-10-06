@@ -83,3 +83,20 @@
   .landing-page .landing-section-head h2,.landing-page .explainer-copy h2{font-size:36px}
   .landing-page .cta-band{padding:42px 18px}
 }
+/* shared Daegon Music header */
+.dm-header{height:86px;background:#fff;border-bottom:1px solid #ededed;position:sticky;top:0;z-index:70}
+.dm-header-inner{height:100%;max-width:100%;margin:auto;padding:0 46px;display:flex;align-items:center;gap:38px}
+.dm-brand{display:flex;align-items:center;gap:10px;color:#111;text-decoration:none;white-space:nowrap}
+.dm-brand>span{width:36px;height:36px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:18px;font-weight:900}
+.dm-brand>b{font-size:21px;letter-spacing:-.04em}
+.dm-nav{display:flex;align-self:stretch;gap:28px}
+.dm-nav a{display:flex;align-items:center;color:#686868;text-decoration:none;font-size:14px;font-weight:700;border-bottom:3px solid transparent}
+.dm-nav a:hover,.dm-nav a.active{color:#111}.dm-nav a.active{border-color:#1ed760}
+.dm-header-actions{margin-left:auto;display:flex;align-items:center;gap:26px}
+.dm-region{position:relative;display:block}
+.dm-region:after{content:"";width:10px;height:10px;border-right:2px solid #555;border-bottom:2px solid #555;transform:rotate(45deg);position:absolute;right:20px;top:20px;pointer-events:none}
+.dm-region select{appearance:none;width:265px;height:56px;border:1px solid #969696;border-radius:4px;background:#fff;padding:0 52px 0 18px;font-size:17px;color:#5f5f5f;outline:0}
+.dm-profile{width:44px;height:44px;border:0;border-radius:50%;background:#111;color:#fff;font-weight:800}
+@media(max-width:760px){.dm-header{height:72px}.dm-header-inner{padding:0 18px;gap:18px}.dm-brand>b{font-size:18px}.dm-nav{display:none}.dm-region select{width:150px;height:44px;font-size:14px}.dm-region:after{right:16px;top:15px}.dm-profile{width:38px;height:38px}}
+
+.landing-page .site-header,.landing-page .landing-header{display:none!important}
