@@ -1,102 +1,39 @@
-/* Daegon Music — Landing only */
-.landing-page{background:#f4f4f4;margin:0}
-.landing-page .landing-header{position:relative}
-.landing-page .chart-pill{background:#fff;color:#121212;text-decoration:none;font-size:11px;font-weight:700;border-radius:999px;padding:10px 15px;white-space:nowrap}
-.landing-page .landing-main{width:100%!important;max-width:none!important;padding:0!important;margin:0!important}
-.landing-page .landing-hero{min-height:650px;background:#1ed760;display:grid!important;grid-template-columns:minmax(0,1.05fr) minmax(380px,.95fr);align-items:center;overflow:hidden;padding:70px max(40px,calc((100vw - 1220px)/2));gap:60px}
-.landing-page .hero-copy-block{position:relative;z-index:2}
-.landing-page .hero-copy-block .eyebrow{color:#075b28}
-.landing-page .hero-copy-block h1{font-size:clamp(64px,7vw,110px);line-height:.86;letter-spacing:-.075em;margin:18px 0 28px;max-width:720px;font-weight:900}
-.landing-page .hero-copy-block h1 em{font-style:normal;color:#fff}
-.landing-page .hero-copy-block>p{font-size:18px;line-height:1.55;max-width:650px;color:#0a5728;margin:0}
-.landing-page .hero-buttons{display:flex;gap:10px;margin:34px 0 42px}
-.landing-page .hero-primary,.landing-page .hero-secondary{display:inline-flex;align-items:center;justify-content:center;padding:14px 20px;border-radius:999px;font-size:12px;font-weight:800;text-decoration:none}
-.landing-page .hero-primary{background:#121212;color:#fff}
-.landing-page .hero-secondary{border:1px solid rgba(18,18,18,.42);color:#121212}
-.landing-page .hero-stats{display:flex;gap:42px}
-.landing-page .hero-stats div{display:grid}
-.landing-page .hero-stats b{font-size:21px}
-.landing-page .hero-stats span{font-size:9px;color:#0b5b2b;text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
-.landing-page .hero-visual{min-height:480px;position:relative;display:grid;place-items:center}
-.landing-page .visual-orbit{position:absolute;border:18px solid rgba(18,18,18,.95);border-radius:50%}
-.landing-page .orbit-a{width:430px;height:430px}
-.landing-page .orbit-b{width:285px;height:285px}
-.landing-page .orbit-c{width:150px;height:150px}
-.landing-page .hero-chart-card{position:relative;z-index:2;width:min(430px,92%);background:#121212;color:#fff;border-radius:8px;padding:24px;box-shadow:0 28px 70px rgba(0,0,0,.26);transform:rotate(-3deg)}
-.landing-page .mini-label{font-size:9px;letter-spacing:.13em;color:#7f8b85}
-.landing-page .hero-song{display:grid;grid-template-columns:100px minmax(0,1fr);gap:18px;align-items:center;padding:18px 0 22px;border-bottom:1px solid #2a2a2a}
-.landing-page .hero-cover{width:100px;height:100px;border-radius:4px;background:linear-gradient(135deg,#ef476f,#ffd166);display:grid;place-items:center;font-size:28px;font-weight:900}
-.landing-page .hero-song small{font-size:8px;color:#1ed760;font-weight:800;letter-spacing:.1em}
-.landing-page .hero-song h3{font-size:25px;letter-spacing:-.04em;margin:6px 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.landing-page .hero-song p{margin:0;color:#9b9b9b;font-size:10px}
-.landing-page .hero-mini-list{display:grid}
-.landing-page .hero-mini-item{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #222}
-.landing-page .hero-mini-item:last-child{border:0}
-.landing-page .hero-mini-item b{font-size:11px}
-.landing-page .hero-mini-item span{font-size:9px;color:#a3a3a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.landing-page .hero-mini-item em{font-style:normal;font-size:8px;color:#1ed760}
-.landing-page .top-week-section,.landing-page .explainer-section{width:min(1220px,calc(100% - 40px));margin:auto;padding:90px 0}
-.landing-page .landing-section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:34px}
-.landing-page .landing-section-head h2,.landing-page .explainer-copy h2{font-size:46px;letter-spacing:-.05em;margin:8px 0 0}
-.landing-page .landing-section-head a{font-size:11px;font-weight:700;color:#121212}
-.landing-page .top-five-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
-.landing-page .top-five-card{background:#fff;padding:12px 12px 16px;min-width:0}
-.landing-page .top-five-cover{aspect-ratio:1;background:linear-gradient(135deg,var(--c1),var(--c2));display:grid;place-items:center;color:#fff;font-size:26px;font-weight:900;margin-bottom:15px}
-.landing-page .top-five-rank{font-size:10px;font-weight:800;color:#1ed760}
-.landing-page .top-five-card h3{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:7px 0 3px}
-.landing-page .top-five-card p{margin:0;color:#777;font-size:10px}
-.landing-page .top-five-card footer{background:none;color:#777;padding:11px 0 0;border-top:1px solid #eee;margin-top:13px;display:flex;justify-content:space-between;font-size:9px}
-.landing-page .explainer-section{display:grid;grid-template-columns:.8fr 1.2fr;gap:70px;border-top:1px solid #ddd}
-.landing-page .explainer-copy p{color:#666;line-height:1.7}
-.landing-page .explainer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.landing-page .explainer-grid article{background:#121212;color:#fff;padding:24px;min-height:240px}
-.landing-page .explainer-grid article>b{color:#1ed760;font-size:11px}
-.landing-page .explainer-grid h3{font-size:19px;margin:48px 0 10px}
-.landing-page .explainer-grid p{color:#999;font-size:11px;line-height:1.6}
-.landing-page .cta-band{background:#121212;color:#fff;padding:55px max(40px,calc((100vw - 1220px)/2));display:flex;justify-content:space-between;align-items:center}
-.landing-page .cta-band h2{font-size:38px;margin:7px 0}
-.landing-page .cta-band a{background:#1ed760;color:#121212;text-decoration:none;border-radius:999px;padding:15px 20px;font-size:12px;font-weight:800}
-.landing-page .cover.has-artwork,.landing-page .hero-cover.has-artwork,.landing-page .top-five-cover.has-artwork{background-size:cover!important;background-position:center!important;color:transparent!important;text-shadow:none!important}
-.landing-page .hero-cover.loading-art,.landing-page .top-five-cover.loading-art{position:relative;overflow:hidden}
-.landing-page .hero-cover.loading-art:after,.landing-page .top-five-cover.loading-art:after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.22) 42%,transparent 64%);transform:translateX(-120%);animation:landingArtShimmer 1.4s infinite}
-@keyframes landingArtShimmer{to{transform:translateX(120%)}}
-@media(max-width:900px){
-  .landing-page .landing-hero{grid-template-columns:1fr;padding-top:55px}
-  .landing-page .hero-visual{min-height:390px}
-  .landing-page .top-five-grid{grid-template-columns:repeat(2,1fr)}
-  .landing-page .top-five-card:first-child{grid-column:1/-1}
-  .landing-page .explainer-section{grid-template-columns:1fr}
-  .landing-page .explainer-grid{grid-template-columns:1fr}
-  .landing-page .explainer-grid article{min-height:180px}
-  .landing-page .cta-band{align-items:flex-start;flex-direction:column;gap:22px}
-}
-@media(max-width:560px){
-  .landing-page .landing-hero{padding:42px 18px}
-  .landing-page .hero-copy-block h1{font-size:56px}
-  .landing-page .hero-stats{gap:20px;flex-wrap:wrap}
-  .landing-page .hero-chart-card{transform:none}
-  .landing-page .hero-song{grid-template-columns:76px minmax(0,1fr)}
-  .landing-page .hero-cover{width:76px;height:76px}
-  .landing-page .top-week-section,.landing-page .explainer-section{width:calc(100% - 28px);padding:65px 0}
-  .landing-page .top-five-grid{grid-template-columns:1fr 1fr}
-  .landing-page .landing-section-head{align-items:flex-start;flex-direction:column;gap:10px}
-  .landing-page .landing-section-head h2,.landing-page .explainer-copy h2{font-size:36px}
-  .landing-page .cta-band{padding:42px 18px}
-}
-/* shared Daegon Music header */
+:root{--songs:#7d389f;--artists:#3349bf;--albums:#08735e;--pink:#ef006f;--ink:#151515;--muted:#6b6b6b;--line:#e7e7e7;--font:"Inter",Arial,sans-serif}
+*{box-sizing:border-box}
+body.landing-page{margin:0;background:#fff;color:var(--ink);font-family:var(--font)}
+button,select{font:inherit}
 .dm-header{height:86px;background:#fff;border-bottom:1px solid #ededed;position:sticky;top:0;z-index:70}
-.dm-header-inner{height:100%;max-width:100%;margin:auto;padding:0 46px;display:flex;align-items:center;gap:38px}
+.dm-header-inner{height:100%;padding:0 46px;display:flex;align-items:center;gap:38px}
 .dm-brand{display:flex;align-items:center;gap:10px;color:#111;text-decoration:none;white-space:nowrap}
 .dm-brand>span{width:36px;height:36px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:18px;font-weight:900}
 .dm-brand>b{font-size:21px;letter-spacing:-.04em}
 .dm-nav{display:flex;align-self:stretch;gap:28px}
 .dm-nav a{display:flex;align-items:center;color:#686868;text-decoration:none;font-size:14px;font-weight:700;border-bottom:3px solid transparent}
-.dm-nav a:hover,.dm-nav a.active{color:#111}.dm-nav a.active{border-color:#1ed760}
+.dm-nav a.active,.dm-nav a:hover{color:#111}.dm-nav a.active{border-color:#1ed760}
 .dm-header-actions{margin-left:auto;display:flex;align-items:center;gap:26px}
-.dm-region{position:relative;display:block}
-.dm-region:after{content:"";width:10px;height:10px;border-right:2px solid #555;border-bottom:2px solid #555;transform:rotate(45deg);position:absolute;right:20px;top:20px;pointer-events:none}
+.dm-region{position:relative;display:block}.dm-region:after{content:"";width:10px;height:10px;border-right:2px solid #555;border-bottom:2px solid #555;transform:rotate(45deg);position:absolute;right:20px;top:20px;pointer-events:none}
 .dm-region select{appearance:none;width:265px;height:56px;border:1px solid #969696;border-radius:4px;background:#fff;padding:0 52px 0 18px;font-size:17px;color:#5f5f5f;outline:0}
 .dm-profile{width:44px;height:44px;border:0;border-radius:50%;background:#111;color:#fff;font-weight:800}
-@media(max-width:760px){.dm-header{height:72px}.dm-header-inner{padding:0 18px;gap:18px}.dm-brand>b{font-size:18px}.dm-nav{display:none}.dm-region select{width:150px;height:44px;font-size:14px}.dm-region:after{right:16px;top:15px}.dm-profile{width:38px;height:38px}}
 
-.landing-page .site-header,.landing-page .landing-header{display:none!important}
+.landing-feature{min-height:535px;background:var(--pink);color:#fff;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:80px;padding:70px 50px 62px;align-items:center}
+.feature-copy{align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+.feature-kicker{font-size:14px;font-weight:800;margin:0 0 34px}
+.landing-feature h1{font-size:clamp(50px,5vw,78px);line-height:1.02;letter-spacing:-.065em;max-width:1180px;margin:0 0 28px;font-weight:800}
+.landing-feature p#landingPeriod{font-size:18px;margin:0}
+.feature-dots{display:flex;gap:10px;margin-top:auto;padding-top:82px}.feature-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35)}.feature-dots i.active{background:#fff}
+.feature-art{width:304px;height:304px;justify-self:end;background:#111;display:grid;place-items:center;font-size:68px;font-weight:900;background-size:cover;background-position:center}.feature-art.has-artwork{color:transparent}
+
+.overview-main{padding:82px 44px 90px}
+.overview-tabs{display:flex;gap:38px;margin-bottom:70px}.overview-tabs button{border:0;background:none;font-size:16px;font-weight:800;padding:0 8px 14px;border-bottom:3px solid transparent}.overview-tabs button.active{border-color:#111}
+.weekly-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.weekly-card{min-height:340px;padding:30px;text-decoration:none;color:#fff;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.weekly-card h2{font-size:36px;line-height:1.12;letter-spacing:-.055em;margin:0}.weekly-card h2 span{opacity:.62}
+.songs-card{background:var(--songs)}.artists-card{background:var(--artists)}.albums-card{background:var(--albums)}
+.card-bottom{display:grid;grid-template-columns:104px 1fr;gap:18px;align-items:end}.card-art{width:104px;height:104px;background:#111;display:grid;place-items:center;font-size:26px;font-weight:900;background-size:cover;background-position:center}.card-art.has-artwork{color:transparent}
+.card-copy{display:grid;align-content:end;min-width:0}.number-one{background:#fff;color:inherit;width:max-content;max-width:100%;padding:3px 7px;font-size:11px;font-weight:900;margin-bottom:8px}.songs-card .number-one{color:var(--songs)}.artists-card .number-one{color:var(--artists)}.albums-card .number-one{color:var(--albums)}
+.card-copy b{font-size:15px;line-height:1.35}.card-copy p{margin:5px 0 0;font-size:13px;opacity:.85}
+.overview-about{border-top:1px solid var(--line);margin-top:86px;padding-top:54px;display:grid;grid-template-columns:.9fr 1.1fr;gap:60px}.section-kicker{font-size:10px;font-weight:800;letter-spacing:.12em;color:#777}.overview-about h2{font-size:38px;letter-spacing:-.05em;margin:9px 0}.overview-about p{font-size:15px;line-height:1.7;color:#666;margin:0}
+
+footer{background:#111;color:#aaa;padding:36px 0}.footer-inner{width:calc(100% - 88px);margin:auto;display:flex;align-items:center;gap:28px}.footer-brand{display:flex;align-items:center;gap:8px;color:#fff}.footer-brand span{width:26px;height:26px;border-radius:50%;background:#1ed760;color:#111;display:grid;place-items:center;font-weight:900}.footer-inner p{font-size:11px}.footer-inner>span:last-child{margin-left:auto;font-size:10px}
+@media(max-width:980px){.weekly-grid{grid-template-columns:1fr 1fr}.weekly-card:last-child{grid-column:1/-1}.landing-feature{grid-template-columns:1fr 280px}.feature-art{width:250px;height:250px}}
+@media(max-width:760px){.dm-header{height:72px}.dm-header-inner{padding:0 18px;gap:18px}.dm-brand>b{font-size:18px}.dm-nav{display:none}.dm-region select{width:150px;height:44px;font-size:14px}.dm-region:after{right:16px;top:15px}.dm-profile{width:38px;height:38px}.landing-feature{grid-template-columns:1fr;padding:50px 20px}.feature-art{justify-self:start;width:220px;height:220px}.feature-dots{padding-top:34px}.overview-main{padding:55px 20px}.weekly-grid{grid-template-columns:1fr}.weekly-card:last-child{grid-column:auto}.overview-about{grid-template-columns:1fr}.footer-inner{width:calc(100% - 40px)}}
