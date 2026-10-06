@@ -69,12 +69,22 @@ async function loadWeek(type,date){
 }
 
 function initials(s){return String(s||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()}
+function movementDirection(dif){
+ const d=String(dif||"").trim().toUpperCase();
+ if(d==="NEW") return "new";
+ if(d==="RE"||d==="RE-ENTRY"||d==="REENTRY") return "re";
+ if(d==="↑"||d==="▲"||d==="UP") return "up";
+ if(d==="↓"||d==="▼"||d==="DOWN") return "down";
+ return "same";
+}
 function move(r){
- if(r.dif==="NEW")return{text:"New",cls:""};
- if(r.dif==="RE")return{text:"Re-Entry",cls:"reentry"};
- if(r.dif==="↑")return{text:"↑ "+Math.max(1,Number(r.lw)-r.rank),cls:"up"};
- if(r.dif==="↓")return{text:"↓ "+Math.max(1,r.rank-Number(r.lw)),cls:"down"};
- return{text:"—",cls:"same"};
+ const dir=movementDirection(r.dif);
+ if(dir==="new") return {text:"New",cls:""};
+ if(dir==="re") return {text:"Re-Entry",cls:"reentry"};
+ const lw=Number(r.lw), rank=Number(r.rank);
+ if(dir==="up"&&Number.isFinite(lw)&&lw>rank) return {text:"↑ "+(lw-rank),cls:"up"};
+ if(dir==="down"&&Number.isFinite(lw)&&lw<rank) return {text:"↓ "+(rank-lw),cls:"down"};
+ return {text:"—",cls:"same"};
 }
 function mainText(r){return currentChart==="songs"?r.song:currentChart==="albums"?r.album:r.artist}
 function subText(r){return currentChart==="artists"?"":r.artist}
@@ -119,7 +129,7 @@ async function resolveArtwork(row){
 function pickHeroSlides(){
  const newEntry=currentRows.find(r=>r.dif==="NEW")||currentRows[0];
  const gainers=currentRows
-   .filter(r=>r.dif==="↑"&&Number.isFinite(Number(r.lw))&&Number(r.lw)>r.rank)
+   .filter(r=>movementDirection(r.dif)==="up"&&Number.isFinite(Number(r.lw))&&Number(r.lw)>r.rank)
    .map(r=>({...r,_gain:Number(r.lw)-r.rank}))
    .filter(r=>r._gain>0)
    .sort((a,b)=>b._gain-a._gain);
