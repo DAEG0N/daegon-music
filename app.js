@@ -118,8 +118,12 @@ async function resolveArtwork(row){
 
 function pickHeroSlides(){
  const newEntry=currentRows.find(r=>r.dif==="NEW")||currentRows[0];
- const gainers=currentRows.filter(r=>r.dif==="↑"&&Number(r.lw)>0).sort((a,b)=>(Number(b.lw)-b.rank)-(Number(a.lw)-a.rank));
- const gainer=gainers[0]||currentRows[0];
+ const gainers=currentRows
+   .filter(r=>r.dif==="↑"&&Number.isFinite(Number(r.lw))&&Number(r.lw)>r.rank)
+   .map(r=>({...r,_gain:Number(r.lw)-r.rank}))
+   .filter(r=>r._gain>0)
+   .sort((a,b)=>b._gain-a._gain);
+ const gainer=gainers[0]||null;
  const longest=[...currentRows].sort((a,b)=>b.weeks-a.weeks)[0]||currentRows[0];
  let extra=currentRows[0];
  let extraText="";
@@ -134,10 +138,23 @@ function pickHeroSlides(){
  }
  const chartName=currentChart==="songs"?"Top Songs":currentChart==="albums"?"Top Albums":"Top Artists";
  const newText=currentChart==="artists"?`${newEntry.artist} is the highest new entry on ${chartName} Global at #${newEntry.rank}.`:`“${mainText(newEntry)}” by ${newEntry.artist} is the highest new entry on ${chartName} Global at #${newEntry.rank}.`;
- const gain=Math.max(0,Number(gainer.lw)-gainer.rank);
- const gainerText=currentChart==="artists"?`${gainer.artist} is the biggest gainer on ${chartName} Global, up ${gain} spots to #${gainer.rank}.`:`“${mainText(gainer)}” by ${gainer.artist} is the biggest gainer on ${chartName} Global, up ${gain} spots to #${gainer.rank}.`;
  const longText=currentChart==="artists"?`${longest.artist} has been on ${chartName} Global the longest, at ${longest.weeks} weeks straight.`:`“${mainText(longest)}” by ${longest.artist} has been on ${chartName} Global the longest, at ${longest.weeks} weeks straight.`;
- return [{row:newEntry,text:newText},{row:extra,text:extraText},{row:gainer,text:gainerText},{row:longest,text:longText}];
+ const slides=[
+   {row:newEntry,text:newText},
+   {row:extra,text:extraText},
+   gainer ? {row:gainer,text:currentChart==="artists"
+      ? `${gainer.artist} is the biggest gainer on ${chartName} Global, up ${gainer._gain} spots to #${gainer.rank}.`
+      : `“${mainText(gainer)}” by ${gainer.artist} is the biggest gainer on ${chartName} Global, up ${gainer._gain} spots to #${gainer.rank}.`} : null,
+   {row:longest,text:longText}
+ ].filter(Boolean);
+
+ const seen=new Set();
+ return slides.filter(s=>{
+   const key=mainText(s.row)+"|"+s.text;
+   if(seen.has(key)) return false;
+   seen.add(key);
+   return true;
+ });
 }
 async function dominantColor(url,fallback="#ef006f"){
  if(!url)return fallback;
