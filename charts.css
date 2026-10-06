@@ -160,3 +160,6 @@ td{padding:14px 0;vertical-align:middle}
   .spotify-pill,.spotify-pill-select select{font-size:14px;padding-left:20px}
   .spotify-pill-select .chevron,.spotify-pill .chevron{right:18px;top:16px;width:11px;height:11px}
 }
+
+/* Dedicated chart pages: no chart-type selector */
+.chart-type-pill,.chart-tabs{display:none!important}
