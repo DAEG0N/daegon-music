@@ -163,3 +163,8 @@ td{padding:14px 0;vertical-align:middle}
 
 /* Dedicated chart pages: no chart-type selector */
 .chart-type-pill,.chart-tabs{display:none!important}
+
+/* Fixed global navigation */
+body{padding-top:86px}
+.dm-header{position:fixed!important;top:0;left:0;right:0;width:100%;z-index:1000}
+@media(max-width:760px){body{padding-top:72px}}
