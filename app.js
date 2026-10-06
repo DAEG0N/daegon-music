@@ -104,26 +104,153 @@ function render(){
  }).join("");
 }
 
-async function appleSearch(term,entity){const r=await fetch("https://itunes.apple.com/search?term="+encodeURIComponent(term)+"&entity="+entity+"&limit=8&country=us");if(!r.ok)throw new Error("Apple");return r.json()}
-function pickTrack(results,row){
- const artist=norm(row.artist),title=norm(mainText(row).replace(/\s*\([^)]*\)\s*/g," "));
- return results.find(x=>norm(x.artistName)===artist&&norm(x.trackName||x.collectionName||x.artistName)===title)
- ||results.find(x=>norm(x.artistName).includes(artist.split(" ")[0])&&norm(x.trackName||x.collectionName||x.artistName).includes(title.split(" ").slice(0,3).join(" ")))
- ||results[0];
+function exactish(a,b){const x=norm(a),y=norm(b);return !!x&&!!y&&x===y}
+function exactArtist(a,b){return exactish(a,b)}
+function exactTitle(a,b){return exactish(a,b)}
+function artworkIdentityTitle(kind,value){
+ let x=norm(value);
+ if(kind==="song"){
+   x=x.replace(/\bpt\s*(\d+)\b/g,"part $1")
+      .replace(/\bpart\s*(\d+)\b/g,"part $1")
+      .replace(/\b(?:radio edit|single version|album version|edit|remaster(?:ed)?(?: \d{4})?|mono|stereo|explicit|clean)\b/g,"")
+      .replace(/\b(?:with|feat|ft|featuring)\b.*$/g,"")
+      .replace(/\s+/g," ").trim();
+ }
+ return x;
 }
-async function wikipediaArtistImage(name){
- const key="artistPhoto:"+norm(name),cached=localStorage.getItem(key);if(cached)return cached==="__none__"?null:cached;
+function artworkSearchTitle(kind,value){
+ let x=String(value||"").trim();
+ if(kind!=="song")return x;
+ return x
+   .replace(/\s*[\(\[]\s*(?:with|feat\.?|ft\.?|featuring)\b[^\)\]]*[\)\]]/gi,"")
+   .replace(/\s+(?:with|feat\.?|ft\.?|featuring)\s+.+$/gi,"")
+   .replace(/\s*[\(\[]\s*(?:radio edit|single version|album version|edit|remaster(?:ed)?(?:\s+\d{4})?|mono|stereo|explicit|clean)\s*[\)\]]\s*$/gi,"")
+   .replace(/\s+/g," ").trim();
+}
+function usableImage(url){
+ if(!url)return false;
+ const u=String(url).toLowerCase();
+ return !u.includes("2a96cbd8b46e442fc41c2b86b821562f")&&!u.includes("default_album")&&!u.includes("noimage")&&!u.includes("no-image");
+}
+async function jsonFetch(url,timeout=7000){
  try{
-   const u="https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch="+encodeURIComponent(name)+"&gsrlimit=1&prop=pageimages&pithumbsize=700&format=json&origin=*";
-   const r=await fetch(u);const j=await r.json();const pages=Object.values(j.query?.pages||{});const url=pages[0]?.thumbnail?.source||null;
-   localStorage.setItem(key,url||"__none__");return url;
- }catch(e){return null}
+   const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),timeout);
+   const r=await fetch(url,{signal:ctrl.signal});clearTimeout(timer);
+   if(!r.ok)return null;return await r.json();
+ }catch{return null}
+}
+function compactKey(v){return norm(v).replace(/[^a-z0-9]/g,"")}
+function extractYear(name){const m=String(name||"").match(/\b(19|20)\d{2}\b/);return{year:m?m[0]:null,stripped:m?String(name).replace(m[0],"").trim():String(name||"")}}
+function albumVariants(name){const{year,stripped}=extractYear(name);const out=[String(name||"")];if(year&&stripped&&stripped!==name)out.push(stripped);return[...new Set(out)]}
+
+const HARDCODED_ALBUM_IMAGES={
+ checkmate:"https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da841ebe14cc216c7be9269638d7",
+ solo:"https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02c0f23c0d2af5ec63daef87f0",
+ ritalee1979:"https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02471646faaecf4b53e95b5c1c",
+ rebeldes:"https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025637ea9091a58684212c8fea",
+ equals:"https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02dc806722f6802a8ea9953c89",
+ brasileirinha:"https://static.wikia.nocookie.net/anitta/images/0/0c/BRASILEIRINHA.png/revision/latest?cb=20210622000705&path-prefix=pt-br",
+ girlfromrio:"https://i.pinimg.com/736x/9d/1a/66/9d1a663dae6e7251e69c75e8605b9ce9.jpg",
+ acontece:"https://i.pinimg.com/736x/72/c5/fd/72c5fdbdcb418854b7aee2c12720007b.jpg",
+ wanessacamargo:"https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02b3053279804f33dd993d032c",
+ wanessacamargo2002:"https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02a492ad852a3ff45542494af6",
+ w:"https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e022cd46c56308c5aba148c03dc",
+ deadline:"https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e028db56c674b13b3a4c6a4dbb8"
+};
+const HARDCODED_TRACK_IMAGES={saveyourtearsremix:"https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02c6af5ffa661a365b77df6ef6"};
+
+async function searchTheAudioDB(name,kind,artistName=""){
+ if(kind==="artist"){
+   const d=await jsonFetch("https://www.theaudiodb.com/api/v1/json/123/search.php?s="+encodeURIComponent(name),7000);
+   const hit=(d?.artists||[]).find(a=>exactArtist(a?.strArtist,name));
+   return hit?.strArtistThumb||"";
+ }
+ const d=await jsonFetch("https://www.theaudiodb.com/api/v1/json/123/searchalbum.php?s="+encodeURIComponent(artistName)+"&a="+encodeURIComponent(name),7000);
+ const hit=(d?.album||[]).find(a=>exactTitle(a?.strAlbum,name)&&exactArtist(a?.strArtist,artistName));
+ return hit?.strAlbumThumb||"";
+}
+async function searchWikidataArtist(name){
+ const s=await jsonFetch("https://www.wikidata.org/w/api.php?action=wbsearchentities&search="+encodeURIComponent(name)+"&language=en&limit=5&format=json&origin=*",7000);
+ for(const item of s?.search||[]){
+   if(!exactArtist(item?.label,name))continue;
+   const d=await jsonFetch("https://www.wikidata.org/w/api.php?action=wbgetclaims&entity="+encodeURIComponent(item.id)+"&property=P18&format=json&origin=*",7000);
+   const fn=d?.claims?.P18?.[0]?.mainsnak?.datavalue?.value;
+   if(fn)return "https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(String(fn).replace(/ /g,"_"))+"?width=600";
+ }
+ return "";
+}
+function appleArtSize(url){return String(url||"").replace(/\/\d+x\d+bb(?:-\d+)?\.(jpg|png)$/i,"/1200x1200bb.$1").replace(/\/100x100bb\.(jpg|png)$/i,"/1200x1200bb.$1")}
+async function searchApple(name,artist,kind){
+ const entity=kind==="song"?"song":kind==="album"?"album":"musicArtist";
+ const term=kind==="artist"?name:(name+" "+artist);
+ const d=await jsonFetch("https://itunes.apple.com/search?term="+encodeURIComponent(term)+"&entity="+entity+"&limit=25&country=br",10000);
+ const results=d?.results||[];
+ if(kind==="artist"){
+   const hit=results.find(x=>exactArtist(x.artistName,name))||results[0];
+   return usableImage(hit?.artworkUrl100||hit?.artworkUrl60)?appleArtSize(hit.artworkUrl100||hit.artworkUrl60):"";
+ }
+ if(kind==="album"){
+   for(const variant of albumVariants(name)){
+     const hit=results.find(x=>exactTitle(x.collectionName,variant)&&exactArtist(x.artistName,artist));
+     if(hit&&usableImage(hit.artworkUrl100||hit.artworkUrl60))return appleArtSize(hit.artworkUrl100||hit.artworkUrl60);
+   }
+   return "";
+ }
+ const wanted=artworkIdentityTitle("song",name);
+ const hit=results.find(x=>artworkIdentityTitle("song",x.trackName)===wanted&&exactArtist(x.artistName,artist))
+   ||results.find(x=>artworkIdentityTitle("song",x.trackName)===wanted);
+ return hit&&usableImage(hit.artworkUrl100||hit.artworkUrl60)?appleArtSize(hit.artworkUrl100||hit.artworkUrl60):"";
 }
 async function resolveArtwork(row){
- if(currentChart==="artists")return wikipediaArtistImage(row.artist);
- const term=mainText(row)+" "+row.artist,key="appleArt:"+currentChart+":"+norm(term),cached=localStorage.getItem(key);
- if(cached)return cached==="__none__"?null:cached;
- try{const d=await appleSearch(term,CHARTS[currentChart].entity);const h=pickTrack(d.results||[],row);const art=(h?.artworkUrl100||h?.artworkUrl60)?.replace(/100x100bb|60x60bb/,"700x700bb")||null;localStorage.setItem(key,art||"__none__");return art}catch(e){return null}
+ const kind=currentChart==="songs"?"song":currentChart==="albums"?"album":"artist";
+ const name=mainText(row),artist=row.artist||name;
+ const key="img-public-v1|"+kind+"|"+artworkIdentityTitle(kind,name)+"|"+norm(artist);
+ const cached=localStorage.getItem(key);if(cached)return cached==="__none__"?null:cached;
+
+ // Same exact public overrides used by Daegon Charts.
+ if(kind==="song"&&norm(artist)==="rebeldes"){
+   try{
+     const d=await jsonFetch("https://itunes.apple.com/lookup?id=721250427&entity=song&country=br",10000);
+     const results=d?.results||[],track=results.find(x=>String(x.wrapperType||"").toLowerCase()==="track"&&norm(x.trackName)===norm(name));
+     const collection=results.find(x=>String(x.wrapperType||"").toLowerCase()==="collection"||String(x.collectionType||"").toLowerCase()==="album");
+     const art=appleArtSize(track?.artworkUrl100||track?.artworkUrl60||collection?.artworkUrl100||collection?.artworkUrl60||"");
+     if(usableImage(art)){localStorage.setItem(key,art);return art}
+   }catch{}
+ }
+ if(kind==="album"&&norm(name)==="the life of a showgirl"&&norm(artist)==="taylor swift"){
+   try{
+     const d=await jsonFetch("https://itunes.apple.com/lookup?id=6814997249&country=br",10000);
+     const hit=(d?.results||[]).find(x=>String(x.collectionId||"")==="6814997249")||(d?.results||[])[0];
+     const art=appleArtSize(hit?.artworkUrl100||hit?.artworkUrl60||"");
+     if(usableImage(art)){localStorage.setItem(key,art);return art}
+   }catch{}
+ }
+
+ if(kind==="album"){
+   const hard=HARDCODED_ALBUM_IMAGES[compactKey(name)];
+   if(usableImage(hard)){localStorage.setItem(key,hard);return hard}
+ }
+ if(kind==="song"){
+   const hard=HARDCODED_TRACK_IMAGES[compactKey(name)];
+   if(usableImage(hard)){localStorage.setItem(key,hard);return hard}
+ }
+
+ let url=await searchApple(artworkSearchTitle(kind,name),artist,kind);
+
+ if(!url&&kind==="album")url=await searchTheAudioDB(name,"album",artist);
+ if(!url&&kind==="artist")url=await searchTheAudioDB(name,"artist");
+ if(!url&&kind==="artist")url=await searchWikidataArtist(name);
+
+ // Same Daegon Charts final visual fallback: song/album -> artist square image.
+ if(!url&&kind!=="artist"&&artist){
+   const artistRow={artist};
+   const previous=currentChart;
+   currentChart="artists";
+   try{url=await resolveArtwork(artistRow)}finally{currentChart=previous}
+ }
+
+ if(usableImage(url)){localStorage.setItem(key,url);return url}
+ localStorage.setItem(key,"__none__");return null;
 }
 
 function pickHeroSlides(){
