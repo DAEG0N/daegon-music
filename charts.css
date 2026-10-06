@@ -174,3 +174,37 @@ body{padding-top:86px}
 .hero-pager i{cursor:pointer}
 body[data-chart="artists"] .cover{border-radius:50%}
 body[data-chart="artists"] .hero-art{border-radius:0}
+
+/* Spotify-style week picker */
+.week-picker{position:relative}
+.week-trigger{min-width:220px;justify-content:space-between}
+.week-picker.open .week-trigger .chevron{transform:rotate(225deg);top:23px}
+.week-popover{
+ position:absolute;top:70px;left:0;width:770px;background:#fff;border-radius:10px;
+ box-shadow:0 14px 36px rgba(0,0,0,.16);z-index:60;padding:26px 0 18px;color:#111
+}
+.range-inputs{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:0 48px 24px}
+.range-box{height:64px;border:1px solid #bdbdbd;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800}
+.calendar-divider{height:1px;background:#d4d4d4}
+.calendar-nav{display:grid;grid-template-columns:44px 1fr 1fr 44px;align-items:center;padding:28px 28px 16px;gap:16px}
+.calendar-nav button{border:0;background:none;font-size:24px;color:#888}
+.calendar-month-title{text-align:center;font-size:17px;font-weight:800}
+.calendar-grid-wrap{display:grid;grid-template-columns:1fr 1fr;gap:34px;padding:0 38px 12px}
+.calendar-weekdays,.calendar-days{display:grid;grid-template-columns:repeat(7,1fr)}
+.calendar-weekdays span{height:34px;display:grid;place-items:center;font-size:13px;color:#555}
+.calendar-day,.calendar-empty{height:48px}
+.calendar-day{border:0;background:transparent;font-size:14px;position:relative;z-index:1}
+.calendar-day.disabled{color:#dedede;cursor:default}
+.calendar-day.selected{background:#3f00ff;color:#fff}
+.calendar-day.range-start{border-radius:24px 0 0 24px}
+.calendar-day.range-end{border-radius:0 24px 24px 0}
+.calendar-day.range-start.range-end{border-radius:24px}
+.calendar-day:not(.disabled):hover{outline:1px solid #3f00ff;outline-offset:-1px}
+@media(max-width:850px){
+ .week-popover{position:fixed;left:12px;right:12px;top:88px;width:auto;max-height:calc(100vh - 110px);overflow:auto}
+ .calendar-grid-wrap{grid-template-columns:1fr}
+ .calendar-panel:last-child{display:none}
+ .calendar-nav{grid-template-columns:44px 1fr 44px}
+ .calendar-month-title:nth-of-type(2){display:none}
+ .range-inputs{padding-left:20px;padding-right:20px}
+}
