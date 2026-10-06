@@ -79,7 +79,7 @@ async function loadWeek(type,date){
 function initials(s){return String(s||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()}
 function move(r){
  if(r.dif==="NEW") return {text:"New",cls:""};
- if(r.dif==="RE") return {text:"Re",cls:""};
+ if(r.dif==="RE") return {text:"Re-Entry",cls:"reentry"};
  if(r.dif==="↑") return {text:"↑ "+Math.max(1,Number(r.lw)-r.rank),cls:"up"};
  if(r.dif==="↓") return {text:"↓ "+Math.max(1,r.rank-Number(r.lw)),cls:"down"};
  return {text:"—",cls:"same"};
@@ -157,7 +157,7 @@ async function refresh(){
  try{currentRows=await loadWeek(currentChart,currentDate);render();hydrateArtwork();}
  catch(e){rows.innerHTML='<tr><td colspan="7" class="loading-row">This week could not be loaded from the live spreadsheet.</td></tr>'}
 }
-document.querySelectorAll("[data-chart]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-chart]").forEach(x=>x.classList.remove("active"));b.classList.add("active");currentChart=b.dataset.chart;refresh()});
+document.getElementById("chartTypeSelect").onchange=e=>{currentChart=e.target.value;refresh()};
 document.getElementById("weekSelect").onchange=e=>{currentDate=e.target.value;refresh()};
 document.addEventListener("click",e=>{const b=e.target.closest("[data-expand]");if(!b)return;const d=document.getElementById("details-"+b.dataset.expand);const open=d.classList.toggle("open");b.textContent=open?"Less⌃":"More⌄"});
 document.getElementById("downloadCsv").onclick=()=>{if(!currentRows.length)return;const head=["Rank","Change",CHARTS[currentChart].item,"Artist","LW","Peak","Weeks","Weeks at #1","Streams","Total Streams"];const data=[head,...currentRows.map(r=>[r.rank,r.dif,mainText(r),r.artist||"",r.lw,r.peak,r.weeks,r.weeks1,r.streams,r.total])];const csv=data.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(",")).join("\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=`daegon-music-${currentChart}-${currentDate}.csv`;a.click();URL.revokeObjectURL(u)};
