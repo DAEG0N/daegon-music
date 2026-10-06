@@ -4,7 +4,7 @@ const CHARTS={
   albums:{sheet:"Top Streaming Albums",title:"Weekly Top Albums Global",subtitle:"The albums generating the most streams this week.",item:"Album",entity:"album"},
   artists:{sheet:"Top 50 Artists",title:"Weekly Top Artists Global",subtitle:"The artists generating the most streams this week.",item:"Artist",entity:"musicArtist"}
 };
-let currentChart="songs";
+let currentChart=document.body.dataset.chart||"songs";
 let currentDate="2026-10-03";
 let currentRows=[];
 
@@ -157,7 +157,7 @@ async function refresh(){
  try{currentRows=await loadWeek(currentChart,currentDate);render();hydrateArtwork();}
  catch(e){rows.innerHTML='<tr><td colspan="7" class="loading-row">This week could not be loaded from the live spreadsheet.</td></tr>'}
 }
-document.getElementById("chartTypeSelect").onchange=e=>{currentChart=e.target.value;refresh()};
+
 document.getElementById("weekSelect").onchange=e=>{currentDate=e.target.value;refresh()};
 document.addEventListener("click",e=>{const b=e.target.closest("[data-expand]");if(!b)return;const d=document.getElementById("details-"+b.dataset.expand);const open=d.classList.toggle("open");b.textContent=open?"Less⌃":"More⌄"});
 document.getElementById("downloadCsv").onclick=()=>{if(!currentRows.length)return;const head=["Rank","Change",CHARTS[currentChart].item,"Artist","LW","Peak","Weeks","Weeks at #1","Streams","Total Streams"];const data=[head,...currentRows.map(r=>[r.rank,r.dif,mainText(r),r.artist||"",r.lw,r.peak,r.weeks,r.weeks1,r.streams,r.total])];const csv=data.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(",")).join("\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=`daegon-music-${currentChart}-${currentDate}.csv`;a.click();URL.revokeObjectURL(u)};
