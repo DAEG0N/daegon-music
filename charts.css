@@ -168,3 +168,9 @@ td{padding:14px 0;vertical-align:middle}
 body{padding-top:86px}
 .dm-header{position:fixed!important;top:0;left:0;right:0;width:100%;z-index:1000}
 @media(max-width:760px){body{padding-top:72px}}
+
+.chart-hero{transition:background-color .65s ease}
+.hero-art{transition:background-image .35s ease}
+.hero-pager i{cursor:pointer}
+body[data-chart="artists"] .cover{border-radius:50%}
+body[data-chart="artists"] .hero-art{border-radius:0}
