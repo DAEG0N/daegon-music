@@ -105,3 +105,12 @@ td{padding:14px 0;vertical-align:middle}
   .track-cell{grid-template-columns:64px 1fr}.cover{width:64px;height:64px}.track-copy b{font-size:14px}.track-copy span{font-size:12px}
   .details-panel{margin-left:72px}.detail-grid{grid-template-columns:135px 1fr;row-gap:14px}
 }
+.chart-filterbar{align-items:center;flex-wrap:wrap}
+.chart-tabs{display:flex;gap:6px;margin-right:8px}
+.chart-tab{height:58px;border:0;border-radius:999px;background:#f2f2f2;padding:0 24px;font-weight:700}
+.chart-tab.active{background:#111;color:#fff}
+.pill:disabled{opacity:1;color:#111}
+.pill-select{min-width:210px;height:58px;border:1px solid #d6d6d6;border-radius:999px;background:#fff;padding:0 22px;display:flex;align-items:center;justify-content:space-between}
+.pill-select select{appearance:none;border:0;background:transparent;width:100%;font-weight:700;outline:none}
+.loading-row{text-align:center;padding:60px 20px!important;color:#666}
+@media(max-width:560px){.chart-tabs{width:100%;overflow:auto}.chart-tab{height:48px;padding:0 18px}.pill-select{height:50px;min-width:180px}}
