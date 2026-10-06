@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="charts.css?v=5">
+<link rel="stylesheet" href="charts.css?v=6">
 <link rel="stylesheet" href="global.css?v=1">
 </head>
 <body data-chart="artists">
@@ -47,10 +47,28 @@
 
   <section class="chart-filterbar">
     <button class="spotify-pill static-pill" type="button">Weekly<span class="chevron"></span></button>
-    <label class="spotify-pill-select week-pill">
-      <select id="weekSelect" aria-label="Week"><option>Loading weeks…</option></select>
-      <span class="chevron"></span>
-    </label>
+    <div class="week-picker" id="weekPicker">
+      <button class="spotify-pill week-trigger" id="weekPickerButton" type="button" aria-expanded="false">
+        <span id="weekPickerLabel">Loading weeks…</span><span class="chevron"></span>
+      </button>
+      <div class="week-popover" id="weekPickerPopover" hidden>
+        <div class="range-inputs">
+          <div class="range-box" id="rangeStart">—</div>
+          <div class="range-box" id="rangeEnd">—</div>
+        </div>
+        <div class="calendar-divider"></div>
+        <div class="calendar-nav">
+          <button id="calendarPrev" aria-label="Previous month">←</button>
+          <div class="calendar-month-title" id="monthTitleLeft"></div>
+          <div class="calendar-month-title" id="monthTitleRight"></div>
+          <button id="calendarNext" aria-label="Next month">→</button>
+        </div>
+        <div class="calendar-grid-wrap">
+          <div class="calendar-panel" id="calendarLeft"></div>
+          <div class="calendar-panel" id="calendarRight"></div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="table-wrap">
@@ -79,6 +97,6 @@
 </div>
 
 <script src="data.js"></script>
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>
