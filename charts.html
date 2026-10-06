@@ -36,15 +36,20 @@
 <main class="chart-main">
   <section class="chart-heading">
     <div>
-      <h2>Weekly Top Songs Global</h2>
-      <p>Your weekly update of the most played tracks right now.</p>
+      <h2 id="chartTitle">Weekly Top Songs Global</h2>
+      <p id="chartSubtitle">Your weekly update of the most played tracks right now.</p>
     </div>
     <button class="download-icon" id="downloadCsv" title="Download CSV">⇩</button>
   </section>
 
   <section class="chart-filterbar">
-    <button class="pill">Weekly <span>⌄</span></button>
-    <button class="pill">Week of Oct 1 <span>⌄</span></button>
+    <div class="chart-tabs" role="tablist" aria-label="Chart type">
+      <button class="chart-tab active" data-chart="songs">Songs</button>
+      <button class="chart-tab" data-chart="albums">Albums</button>
+      <button class="chart-tab" data-chart="artists">Artists</button>
+    </div>
+    <button class="pill" disabled>Weekly <span>⌄</span></button>
+    <label class="pill-select"><select id="weekSelect"><option>Loading weeks…</option></select><span>⌄</span></label>
   </section>
 
   <section class="table-wrap">
@@ -52,7 +57,7 @@
       <thead>
         <tr>
           <th class="rank-head">#</th>
-          <th>Track</th>
+          <th id="itemHeader">Track</th>
           <th class="metric-head">ⓘ Peak</th>
           <th class="metric-head">Prev</th>
           <th class="metric-head">ⓘ Streak</th>
@@ -73,6 +78,6 @@
 </div>
 
 <script src="data.js"></script>
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>
