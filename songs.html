@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ef006f">
+<meta name="description" content="Daegon Music — Weekly Top Songs Global">
+<title>Weekly Top Songs Global — Daegon Music</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="charts.css?v=1">
+</head>
+<body data-chart="songs">
+<header class="dm-header">
+  <div class="dm-header-inner">
+    <a class="dm-brand" href="index.html"><span>D</span><b>Daegon Music</b></a>
+    <nav class="dm-nav">
+      <a href="index.html">Home</a>
+      <a class="active" href="charts.html">Charts</a>
+      <a href="index.html#about">About</a>
+    </nav>
+    <div class="dm-header-actions">
+      <label class="dm-region"><select aria-label="Region"><option>Global</option></select></label>
+      <button class="dm-profile" aria-label="Profile">AD</button>
+    </div>
+  </div>
+</header>
+
+<section class="chart-hero">
+  <div class="hero-copy">
+    <a class="all-charts" href="index.html">‹ &nbsp; ALL GLOBAL CHARTS</a>
+    <h1 id="heroHeadline">Loading weekly highlight…</h1>
+    <p id="heroPeriod">Top Songs Global · Sep 25 – Oct 1, 2026</p>
+    <div class="hero-pager" aria-hidden="true"><i class="active"></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="hero-art-wrap">
+    <div class="hero-art fallback" id="weeklyHeroArt">D</div>
+  </div>
+</section>
+
+<main class="chart-main">
+  <section class="chart-heading">
+    <div>
+      <h2 id="chartTitle">Weekly Top Songs Global</h2>
+      <p id="chartSubtitle">Your weekly update of the most played tracks right now.</p>
+    </div>
+    <button class="download-icon" id="downloadCsv" title="Download CSV">⇩</button>
+  </section>
+
+  <section class="chart-filterbar">
+    <button class="spotify-pill static-pill" type="button">Weekly<span class="chevron"></span></button>
+    <label class="spotify-pill-select week-pill">
+      <select id="weekSelect" aria-label="Week"><option>Loading weeks…</option></select>
+      <span class="chevron"></span>
+    </label>
+  </section>
+
+  <section class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="rank-head">#</th>
+          <th id="itemHeader">Track</th>
+          <th class="metric-head">ⓘ Peak</th>
+          <th class="metric-head">Prev</th>
+          <th class="metric-head">ⓘ Streak</th>
+          <th class="metric-head">ⓘ Streams</th>
+          <th class="expand-head"></th>
+        </tr>
+      </thead>
+      <tbody id="chartRows"></tbody>
+    </table>
+  </section>
+</main>
+
+<div class="search-overlay" id="searchOverlay" aria-hidden="true">
+  <div class="search-box">
+    <div class="search-line"><span>⌕</span><input id="searchInput" placeholder="Search songs or artists…" autocomplete="off"><button id="closeSearch">×</button></div>
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js?v=3"></script>
+</body>
+</html>
