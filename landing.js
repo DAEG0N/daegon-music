@@ -12,9 +12,38 @@ function dateQuery(iso){const [y,m,d]=iso.split("-");return `select * where A = 
 async function latestDate(){const j=await gviz("Streaming Songs","select A where A is not null");return [...new Set((j.table.rows||[]).map(r=>isoFromDisplay(cell(r,0))).filter(Boolean))].sort().at(-1)}
 function parseOne(j,type){const r=(j.table.rows||[])[0];if(!r)return null;if(type==="songs")return{rank:parseNum(cell(r,1)),title:String(cell(r,3)||""),artist:String(cell(r,4)||""),album:String(cell(r,5)||"")};if(type==="albums")return{rank:parseNum(cell(r,1)),title:String(cell(r,3)||""),artist:String(cell(r,4)||"")};return{rank:parseNum(cell(r,1)),title:String(cell(r,3)||""),artist:String(cell(r,3)||"")}}
 async function no1(type,date){const j=await gviz(charts[type].sheet,dateQuery(date)+" and B = 1");let one=parseOne(j,type);if(one)return one;const [y,m,d]=date.split("-");const j2=await gviz(charts[type].sheet,`select * where A = '${Number(d)}/${Number(m)}/${y}' and B = 1`);return parseOne(j2,type)}
-async function appleSearch(term,entity){const r=await fetch("https://itunes.apple.com/search?term="+encodeURIComponent(term)+"&entity="+entity+"&limit=6&country=us");if(!r.ok)throw new Error("apple");return r.json()}
-async function wikipediaArtistImage(name){try{const r=await fetch("https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch="+encodeURIComponent(name)+"&gsrlimit=1&prop=pageimages&pithumbsize=700&format=json&origin=*");const j=await r.json();return Object.values(j.query?.pages||{})[0]?.thumbnail?.source||null}catch(e){return null}}
-async function artFor(item,type){if(type==="artists")return wikipediaArtistImage(item.artist);try{const term=item.title+" "+item.artist;const d=await appleSearch(term,charts[type].entity);const hit=(d.results||[])[0];return (hit?.artworkUrl100||hit?.artworkUrl60)?.replace(/100x100bb|60x60bb/,"600x600bb")||null}catch(e){return null}}
+function exactish(a,b){return norm(a)===norm(b)&&!!norm(a)}
+function usableImage(url){if(!url)return false;const u=String(url).toLowerCase();return !u.includes("default_album")&&!u.includes("noimage")&&!u.includes("no-image")}
+async function jsonFetch(url,timeout=7000){try{const c=new AbortController(),t=setTimeout(()=>c.abort(),timeout);const r=await fetch(url,{signal:c.signal});clearTimeout(t);return r.ok?await r.json():null}catch{return null}}
+function appleArtSize(url){return String(url||"").replace(/\/\d+x\d+bb(?:-\d+)?\.(jpg|png)$/i,"/1200x1200bb.$1").replace(/\/100x100bb\.(jpg|png)$/i,"/1200x1200bb.$1")}
+async function searchApple(item,type){
+ const entity=type==="songs"?"song":type==="albums"?"album":"musicArtist";
+ const term=type==="artists"?item.artist:item.title+" "+item.artist;
+ const d=await jsonFetch("https://itunes.apple.com/search?term="+encodeURIComponent(term)+"&entity="+entity+"&limit=25&country=br",10000);
+ const rs=d?.results||[];
+ let hit=null;
+ if(type==="songs")hit=rs.find(x=>exactish(x.trackName,item.title)&&exactish(x.artistName,item.artist))||rs.find(x=>exactish(x.trackName,item.title));
+ else if(type==="albums")hit=rs.find(x=>exactish(x.collectionName,item.title)&&exactish(x.artistName,item.artist));
+ else hit=rs.find(x=>exactish(x.artistName,item.artist));
+ const art=hit?.artworkUrl100||hit?.artworkUrl60||"";
+ return usableImage(art)?appleArtSize(art):"";
+}
+async function searchTheAudioDB(name,type,artist=""){
+ if(type==="artists"){const d=await jsonFetch("https://www.theaudiodb.com/api/v1/json/123/search.php?s="+encodeURIComponent(name));const h=(d?.artists||[]).find(x=>exactish(x.strArtist,name));return h?.strArtistThumb||""}
+ const d=await jsonFetch("https://www.theaudiodb.com/api/v1/json/123/searchalbum.php?s="+encodeURIComponent(artist)+"&a="+encodeURIComponent(name));const h=(d?.album||[]).find(x=>exactish(x.strAlbum,name)&&exactish(x.strArtist,artist));return h?.strAlbumThumb||"";
+}
+async function searchWikidataArtist(name){
+ const s=await jsonFetch("https://www.wikidata.org/w/api.php?action=wbsearchentities&search="+encodeURIComponent(name)+"&language=en&limit=5&format=json&origin=*");
+ for(const x of s?.search||[]){if(!exactish(x.label,name))continue;const d=await jsonFetch("https://www.wikidata.org/w/api.php?action=wbgetclaims&entity="+x.id+"&property=P18&format=json&origin=*");const fn=d?.claims?.P18?.[0]?.mainsnak?.datavalue?.value;if(fn)return "https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(String(fn).replace(/ /g,"_"))+"?width=600"}return "";
+}
+async function artFor(item,type){
+ let url=await searchApple(item,type);
+ if(!url&&type==="albums")url=await searchTheAudioDB(item.title,"albums",item.artist);
+ if(!url&&type==="artists")url=await searchTheAudioDB(item.artist,"artists");
+ if(!url&&type==="artists")url=await searchWikidataArtist(item.artist);
+ if(!url&&type!=="artists"){url=await searchTheAudioDB(item.artist,"artists")||await searchWikidataArtist(item.artist)}
+ return usableImage(url)?url:null;
+}
 function setArt(id,url){const el=document.getElementById(id);if(url){el.style.backgroundImage='url("'+url+'")';el.classList.add("has-artwork")}}
 (async()=>{
  try{
