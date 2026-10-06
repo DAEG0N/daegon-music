@@ -3,23 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#1ed760">
-<meta name="description" content="Daegon Music — weekly streaming charts powered by Daegon Charts data.">
-<title>Daegon Music</title>
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Daegon Music — weekly global streaming charts.">
+<title>Daegon Music Charts</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=5">
-<link rel="stylesheet" href="landing.css?v=1">
+<link rel="stylesheet" href="landing.css?v=3">
 </head>
 <body class="landing-page">
 <header class="dm-header">
   <div class="dm-header-inner">
     <a class="dm-brand" href="index.html"><span>D</span><b>Daegon Music</b></a>
     <nav class="dm-nav">
-      <a class="active" href="index.html">Home</a>
-      <a href="charts.html">Charts</a>
+      <a class="active" href="index.html">Charts</a>
       <a href="#about">About</a>
     </nav>
     <div class="dm-header-actions">
@@ -29,61 +28,59 @@
   </div>
 </header>
 
-<main class="landing-main">
-  <section class="landing-hero">
-    <div class="hero-copy-block">
-      <p class="eyebrow">WEEKLY STREAMING, REFRAMED</p>
-      <h1>What the world<br>is <em>streaming.</em></h1>
-      <p>Daegon Music turns weekly streaming data into a cleaner way to discover momentum, movement and the songs defining each week.</p>
-      <div class="hero-buttons">
-        <a class="hero-primary" href="charts.html">Explore Weekly Charts</a>
-        <a class="hero-secondary" href="#top-week">See this week ↓</a>
-      </div>
-      <div class="hero-stats">
-        <div><b>50</b><span>songs ranked weekly</span></div>
-        <div><b>1</b><span>global weekly chart</span></div>
-        <div><b>03.10.26</b><span>latest chart date</span></div>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="visual-orbit orbit-a"></div>
-      <div class="visual-orbit orbit-b"></div>
-      <div class="visual-orbit orbit-c"></div>
-      <div class="hero-chart-card">
-        <span class="mini-label">THIS WEEK</span>
-        <div class="hero-song" id="heroSong">
-          <div class="hero-cover fallback-cover">D</div>
-          <div><small>#1 · GLOBAL</small><h3>Loading…</h3><p>Weekly streaming leader</p></div>
+<section class="landing-feature">
+  <div class="feature-copy">
+    <p class="feature-kicker">ALL GLOBAL CHARTS</p>
+    <h1 id="landingHeadline">Loading weekly highlight…</h1>
+    <p id="landingPeriod">Weekly charts · Oct 3, 2026</p>
+    <div class="feature-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div>
+  </div>
+  <div class="feature-art" id="landingHeroArt">D</div>
+</section>
+
+<main class="overview-main">
+  <div class="overview-tabs"><button class="active">Global</button></div>
+  <section class="weekly-grid" aria-label="Weekly global charts">
+    <a class="weekly-card songs-card" href="charts.html?chart=songs">
+      <h2>Weekly Top Songs<br><span>Global</span></h2>
+      <div class="card-bottom">
+        <div class="card-art" id="songsCardArt">D</div>
+        <div class="card-copy">
+          <span class="number-one">#1 THIS WEEK</span>
+          <b id="songsCardTitle">Loading…</b>
+          <p id="songsCardArtist">—</p>
         </div>
-        <div class="hero-mini-list" id="heroMiniList"></div>
       </div>
-    </div>
+    </a>
+
+    <a class="weekly-card artists-card" href="charts.html?chart=artists">
+      <h2>Weekly Top Artists<br><span>Global</span></h2>
+      <div class="card-bottom">
+        <div class="card-art artist-art" id="artistsCardArt">D</div>
+        <div class="card-copy">
+          <span class="number-one">#1 THIS WEEK</span>
+          <b id="artistsCardTitle">Loading…</b>
+          <p>Top Artist</p>
+        </div>
+      </div>
+    </a>
+
+    <a class="weekly-card albums-card" href="charts.html?chart=albums">
+      <h2>Weekly Top Albums<br><span>Global</span></h2>
+      <div class="card-bottom">
+        <div class="card-art" id="albumsCardArt">D</div>
+        <div class="card-copy">
+          <span class="number-one">#1 THIS WEEK</span>
+          <b id="albumsCardTitle">Loading…</b>
+          <p id="albumsCardArtist">—</p>
+        </div>
+      </div>
+    </a>
   </section>
 
-  <section class="top-week-section" id="top-week">
-    <div class="landing-section-head">
-      <div><span class="kicker">WEEKLY TOP 5</span><h2>This week, at a glance.</h2></div>
-      <a href="charts.html">View full chart →</a>
-    </div>
-    <div class="top-five-grid" id="topFiveGrid"></div>
-  </section>
-
-  <section class="explainer-section" id="about">
-    <div class="explainer-copy">
-      <span class="kicker">POWERED BY DAEGON CHARTS</span>
-      <h2>Weekly data. Clear movement.</h2>
-      <p>The chart uses the weekly <strong>Streaming Songs</strong> dataset from Daegon Charts. Each entry carries its weekly streams, peak, weeks on chart and cumulative streams.</p>
-    </div>
-    <div class="explainer-grid">
-      <article><b>01</b><h3>Weekly only</h3><p>No daily noise in this first release. Each chart represents a complete weekly snapshot.</p></article>
-      <article><b>02</b><h3>Real movement</h3><p>Track climbs, drops, debuts and re-entries across consecutive chart weeks.</p></article>
-      <article><b>03</b><h3>Artwork-aware</h3><p>Artwork is resolved against Apple’s music catalog search, with graceful fallbacks when a match is unavailable.</p></article>
-    </div>
-  </section>
-
-  <section class="cta-band">
-    <div><span class="kicker">DAEGON MUSIC CHARTS</span><h2>Ready to see the full week?</h2></div>
-    <a href="charts.html">Open the chart →</a>
+  <section class="overview-about" id="about">
+    <div><span class="section-kicker">WEEKLY ONLY</span><h2>Three charts. One weekly snapshot.</h2></div>
+    <p>Daegon Music reads the latest weekly streaming data from Daegon Charts and separates songs, artists and albums into their own global rankings.</p>
   </section>
 </main>
 
@@ -95,7 +92,6 @@
   </div>
 </footer>
 
-<script src="data.js"></script>
-<script src="landing.js"></script>
+<script src="landing.js?v=3"></script>
 </body>
 </html>
