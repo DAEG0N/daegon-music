@@ -28,18 +28,98 @@ function cell(row,i){return row.c?.[i]?.f ?? row.c?.[i]?.v ?? ""}
 function sheetUrl(sheet,tq){return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&tq=${encodeURIComponent(tq)}`}
 async function gviz(sheet,tq){const res=await fetch(sheetUrl(sheet,tq));if(!res.ok)throw new Error("Unable to read Google Sheets");return parseGviz(await res.text())}
 
+let availableDates=[];
+let calendarAnchor=null;
+
+function addDays(iso,days){
+ const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+days);
+ return d.toISOString().slice(0,10);
+}
+function weekRange(chartDate){return{start:addDays(chartDate,-8),end:addDays(chartDate,-2)}}
+function shortDate(iso){
+ const d=new Date(iso+"T12:00:00");
+ return String(d.getMonth()+1).padStart(2,"0")+"/"+String(d.getDate()).padStart(2,"0")+"/"+d.getFullYear();
+}
+function monthStart(iso){
+ const d=new Date(iso+"T12:00:00");
+ return new Date(d.getFullYear(),d.getMonth(),1,12).toISOString().slice(0,10);
+}
+function shiftMonth(iso,delta){
+ const d=new Date(iso+"T12:00:00");
+ return new Date(d.getFullYear(),d.getMonth()+delta,1,12).toISOString().slice(0,10);
+}
+function monthLabel(iso){
+ return new Date(iso+"T12:00:00").toLocaleDateString("en-US",{month:"long",year:"numeric"});
+}
+function weekLabel(iso){
+ return "Week of "+new Date(iso+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
+}
+function dateInRange(day,start,end){return day>=start&&day<=end}
+
 async function loadDates(){
  try{
    const j=await gviz(CHARTS[currentChart].sheet,"select A where A is not null");
-   const dates=[...new Set((j.table.rows||[]).map(r=>isoFromDisplay(cell(r,0))).filter(Boolean))].sort().reverse();
-   const sel=document.getElementById("weekSelect");
-   sel.innerHTML=dates.map(d=>`<option value="${d}">${displayDate(d)}</option>`).join("");
-   currentDate=dates.includes("2026-10-03")?"2026-10-03":dates[0];
-   sel.value=currentDate;
+   availableDates=[...new Set((j.table.rows||[]).map(r=>isoFromDisplay(cell(r,0))).filter(Boolean))].sort().reverse();
+   currentDate=availableDates.includes("2026-10-03")?"2026-10-03":availableDates[0];
  }catch(e){
-   const sel=document.getElementById("weekSelect");
-   sel.innerHTML='<option value="2026-10-03">Oct 3, 2026</option>'; currentDate="2026-10-03";
+   availableDates=["2026-10-03"];currentDate="2026-10-03";
  }
+ calendarAnchor=monthStart(weekRange(currentDate).start);
+ updateWeekPickerUI();
+}
+
+function chartDateForCalendarDay(day){
+ return availableDates.find(d=>{const r=weekRange(d);return dateInRange(day,r.start,r.end)})||null;
+}
+function renderMonth(panelId,monthIso){
+ const panel=document.getElementById(panelId);
+ const first=new Date(monthIso+"T12:00:00"),year=first.getFullYear(),month=first.getMonth();
+ const daysInMonth=new Date(year,month+1,0).getDate();
+ const firstDow=new Date(year,month,1).getDay();
+ const weekdays=["Su","Mo","Tu","We","Th","Fr","Sa"];
+ let html='<div class="calendar-weekdays">'+weekdays.map(x=>'<span>'+x+'</span>').join("")+'</div><div class="calendar-days">';
+ for(let i=0;i<firstDow;i++)html+='<span class="calendar-empty"></span>';
+ const active=weekRange(currentDate);
+ for(let day=1;day<=daysInMonth;day++){
+   const iso=new Date(year,month,day,12).toISOString().slice(0,10);
+   const mapped=chartDateForCalendarDay(iso);
+   const inActive=dateInRange(iso,active.start,active.end);
+   const cls=["calendar-day"];
+   if(!mapped)cls.push("disabled");
+   if(inActive)cls.push("selected");
+   if(iso===active.start)cls.push("range-start");
+   if(iso===active.end)cls.push("range-end");
+   html+='<button class="'+cls.join(" ")+'" data-day="'+iso+'" '+(!mapped?'disabled':'')+'>'+day+'</button>';
+ }
+ html+='</div>';
+ panel.innerHTML=html;
+ panel.querySelectorAll("[data-day]").forEach(btn=>btn.onclick=()=>{
+   const d=chartDateForCalendarDay(btn.dataset.day);if(!d)return;
+   currentDate=d;updateWeekPickerUI();closeWeekPicker();refresh();
+ });
+}
+function renderCalendars(){
+ const left=calendarAnchor,right=shiftMonth(calendarAnchor,1);
+ document.getElementById("monthTitleLeft").textContent=monthLabel(left);
+ document.getElementById("monthTitleRight").textContent=monthLabel(right);
+ renderMonth("calendarLeft",left);renderMonth("calendarRight",right);
+}
+function updateWeekPickerUI(){
+ const r=weekRange(currentDate);
+ document.getElementById("weekPickerLabel").textContent=weekLabel(currentDate);
+ document.getElementById("rangeStart").textContent=shortDate(r.start);
+ document.getElementById("rangeEnd").textContent=shortDate(r.end);
+ const rMonth=monthStart(r.start);
+ if(!calendarAnchor||Math.abs((new Date(calendarAnchor)-new Date(rMonth))/(86400000*28))>2)calendarAnchor=rMonth;
+ renderCalendars();
+}
+function openWeekPicker(){
+ const pop=document.getElementById("weekPickerPopover"),btn=document.getElementById("weekPickerButton");
+ pop.hidden=false;btn.setAttribute("aria-expanded","true");document.getElementById("weekPicker").classList.add("open");
+}
+function closeWeekPicker(){
+ const pop=document.getElementById("weekPickerPopover"),btn=document.getElementById("weekPickerButton");
+ pop.hidden=true;btn.setAttribute("aria-expanded","false");document.getElementById("weekPicker").classList.remove("open");
 }
 
 function parseChartRows(j,type){
@@ -321,13 +401,19 @@ async function hydrateArtwork(){
 }
 function updateLabels(){
  const c=CHARTS[currentChart];document.getElementById("chartTitle").textContent=c.title;document.getElementById("chartSubtitle").textContent=c.subtitle;document.getElementById("itemHeader").textContent=c.item;
- document.getElementById("heroPeriod").textContent=`${currentChart==="songs"?"Top Songs":currentChart==="albums"?"Top Albums":"Top Artists"} Global · Week of ${displayDate(currentDate)}`;
+ const wr=weekRange(currentDate);
+ document.getElementById("heroPeriod").textContent=`${currentChart==="songs"?"Top Songs":currentChart==="albums"?"Top Albums":"Top Artists"} Global · ${new Date(wr.start+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})} – ${new Date(wr.end+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}`;
+ updateWeekPickerUI();
 }
 async function refresh(){
  updateLabels();rows.innerHTML='<tr><td colspan="7" class="loading-row">Loading weekly chart…</td></tr>';
  try{currentRows=await loadWeek(currentChart,currentDate);render();hydrateArtwork()}catch(e){rows.innerHTML='<tr><td colspan="7" class="loading-row">This week could not be loaded from the live spreadsheet.</td></tr>'}
 }
-document.getElementById("weekSelect").onchange=e=>{currentDate=e.target.value;refresh()};
+document.getElementById("weekPickerButton").onclick=e=>{e.stopPropagation();document.getElementById("weekPickerPopover").hidden?openWeekPicker():closeWeekPicker()};
+document.getElementById("calendarPrev").onclick=e=>{e.stopPropagation();calendarAnchor=shiftMonth(calendarAnchor,-1);renderCalendars()};
+document.getElementById("calendarNext").onclick=e=>{e.stopPropagation();calendarAnchor=shiftMonth(calendarAnchor,1);renderCalendars()};
+document.getElementById("weekPickerPopover").onclick=e=>e.stopPropagation();
+document.addEventListener("click",()=>closeWeekPicker());
 document.addEventListener("click",e=>{const b=e.target.closest("[data-expand]");if(!b)return;const d=document.getElementById("details-"+b.dataset.expand);const open=d.classList.toggle("open");b.textContent=open?"Less⌃":"More⌄"});
 document.getElementById("downloadCsv").onclick=()=>{if(!currentRows.length)return;const head=["Rank","Change",CHARTS[currentChart].item,"Artist","LW","Peak","Weeks","Weeks at #1","Streams","Total Streams"];const data=[head,...currentRows.map(r=>[r.rank,r.dif,mainText(r),r.artist||"",r.lw,r.peak,r.weeks,r.weeks1,r.streams,r.total])];const csv=data.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(",")).join("\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=`daegon-music-${currentChart}-${currentDate}.csv`;a.click();URL.revokeObjectURL(u)};
 (async()=>{await loadDates();await refresh()})();
